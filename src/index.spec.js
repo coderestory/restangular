@@ -1,5 +1,8 @@
 /* global describe, beforeEach, afterEach, it, expect, spyOn, jasmine */
 /* jshint unused: false */
+
+import './index';
+
 describe('Restangular', function () {
   // API
   var Restangular, $httpBackend, testData,
