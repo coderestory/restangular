@@ -1,5 +1,7 @@
 // Karma configuration
 
+const webpackConf = require('./webpack.config');
+
 var angularVersion = '1.5.9';
 var lodashVersion = '4.17.2';
 
@@ -16,8 +18,7 @@ module.exports = function (config) {
       'https://cdnjs.cloudflare.com/ajax/libs/angular.js/' + angularVersion + '/angular.js',
       'https://cdnjs.cloudflare.com/ajax/libs/angular.js/' + angularVersion + '/angular-mocks.js',
       'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/' + lodashVersion + '/lodash.js',
-      'src/restangular.js',
-      'test/*.js'
+      { pattern: 'src/**/*.spec.js', watched: false },
     ],
 
 
@@ -61,7 +62,7 @@ module.exports = function (config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
 
 
     // If browser does not capture in given timeout [ms], kill it
@@ -72,11 +73,15 @@ module.exports = function (config) {
     // if true, it capture browsers, run tests and exit
     singleRun: false,
 
+    webpack: webpackConf,
+
     preprocessors: {
       // source files, that you wanna generate coverage for
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
-      'src/**/*.js': ['coverage']
+      'src/**/*.js': ['coverage'],
+
+      'src/**/*.spec.js': [ 'webpack', 'sourcemap' ],
     },
 
     // optionally, configure the reporter
@@ -84,6 +89,5 @@ module.exports = function (config) {
       type: 'lcov',
       dir : 'coverage/'
     }
-
   });
 };
