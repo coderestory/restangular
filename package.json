@@ -56,7 +56,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "karma start"
+    "test": "karma start",
+    "test-ci": "./node_modules/karma/bin/karma start --single-run --browsers ChromeHeadlessNoSandbox"
   },
   "license": "MIT"
 }
