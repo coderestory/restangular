@@ -36,6 +36,8 @@
   },
   "devDependencies": {
     "@types/angular": "^1.6.51",
+    "@types/angular-mocks": "^1.7.0",
+    "@types/jasmine": "^2.8.9",
     "angular-mocks": "^1.4.8",
     "cache-loader": "^1.2.3",
     "fork-ts-checker-webpack-plugin": "^0.4.14",
