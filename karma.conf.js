@@ -18,7 +18,7 @@ module.exports = function (config) {
       'https://cdnjs.cloudflare.com/ajax/libs/angular.js/' + angularVersion + '/angular.js',
       'https://cdnjs.cloudflare.com/ajax/libs/angular.js/' + angularVersion + '/angular-mocks.js',
       'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/' + lodashVersion + '/lodash.js',
-      { pattern: 'src/**/*.spec.js', watched: false },
+      { pattern: 'src/**/*.spec.ts', watched: false },
     ],
 
 
@@ -88,7 +88,7 @@ module.exports = function (config) {
       // (these files will be instrumented by Istanbul)
       'src/**/*.js': ['coverage'],
 
-      'src/**/*.spec.js': [ 'webpack', 'sourcemap' ],
+      'src/**/*.spec.ts': [ 'webpack', 'sourcemap' ],
     },
 
     // optionally, configure the reporter
