@@ -18,3 +18,4 @@ bower_components
 npm-debug.log
 .idea
 .cache-loader/
+dist/
