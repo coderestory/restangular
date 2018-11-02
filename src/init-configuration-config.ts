@@ -1,20 +1,18 @@
 import { Path } from './path';
 import { BaseCreator } from './base-creator';
 
-export const Configurer = {};
+/**
+ * Those are HTTP safe methods for which there is no need to pass any data with the request.
+ */
+const safeMethods = ['get', 'head', 'options', 'trace', 'getlist'];
 
-Configurer.init = function(object, config) {
-  object.configuration = config;
+const absolutePattern = /^https?:\/\//i;
 
-  /**
-   * Those are HTTP safe methods for which there is no need to pass any data with the request.
-   */
-  var safeMethods = ['get', 'head', 'options', 'trace', 'getlist'];
+export function initConfiguraionConfig(config) {
   config.isSafe = function(operation) {
     return _.includes(safeMethods, operation.toLowerCase());
   };
 
-  var absolutePattern = /^https?:\/\//i;
   config.isAbsoluteUrl = function(string) {
     return _.isUndefined(config.absoluteUrl) || _.isNull(config.absoluteUrl) ?
       string && absolutePattern.test(string) :
@@ -22,55 +20,32 @@ Configurer.init = function(object, config) {
   };
 
   config.absoluteUrl = _.isUndefined(config.absoluteUrl) ? true : config.absoluteUrl;
-  object.setSelfLinkAbsoluteUrl = function(value) {
-    config.absoluteUrl = value;
-  };
+
   /**
    * This is the BaseURL to be used with Restangular
    */
   config.baseUrl = _.isUndefined(config.baseUrl) ? '' : config.baseUrl;
-  object.setBaseUrl = function(newBaseUrl) {
-    config.baseUrl = /\/$/.test(newBaseUrl) ?
-      newBaseUrl.substring(0, newBaseUrl.length - 1) :
-      newBaseUrl;
-    return this;
-  };
 
   /**
    * Sets the extra fields to keep from the parents
    */
   config.extraFields = config.extraFields || [];
-  object.setExtraFields = function(newExtraFields) {
-    config.extraFields = newExtraFields;
-    return this;
-  };
 
   /**
    * Some default $http parameter to be used in EVERY call
    **/
   config.defaultHttpFields = config.defaultHttpFields || {};
-  object.setDefaultHttpFields = function(values) {
-    config.defaultHttpFields = values;
-    return this;
-  };
 
   /**
    * Always return plain data, no restangularized object
    **/
   config.plainByDefault = config.plainByDefault || false;
-  object.setPlainByDefault = function(value) {
-    config.plainByDefault = value === true ? true : false;
-    return this;
-  };
 
   config.withHttpValues = function(httpLocalConfig, obj) {
     return _.defaults(obj, httpLocalConfig, config.defaultHttpFields);
   };
 
   config.encodeIds = _.isUndefined(config.encodeIds) ? true : config.encodeIds;
-  object.setEncodeIds = function(encode) {
-    config.encodeIds = encode;
-  };
 
   config.defaultRequestParams = config.defaultRequestParams || {
     get: {},
@@ -80,53 +55,15 @@ Configurer.init = function(object, config) {
     common: {}
   };
 
-  object.setDefaultRequestParams = function(param1, param2) {
-    var methods = [],
-      params = param2 || param1;
-    if (!_.isUndefined(param2)) {
-      if (_.isArray(param1)) {
-        methods = param1;
-      } else {
-        methods.push(param1);
-      }
-    } else {
-      methods.push('common');
-    }
-
-    _.each(methods, function(method) {
-      config.defaultRequestParams[method] = params;
-    });
-    return this;
-  };
-
-  object.requestParams = config.defaultRequestParams;
-
   config.defaultHeaders = config.defaultHeaders || {};
-  object.setDefaultHeaders = function(headers) {
-    config.defaultHeaders = headers;
-    object.defaultHeaders = config.defaultHeaders;
-    return this;
-  };
 
-  object.defaultHeaders = config.defaultHeaders;
 
   /**
    * Method overriders will set which methods are sent via POST with an X-HTTP-Method-Override
    **/
   config.methodOverriders = config.methodOverriders || [];
-  object.setMethodOverriders = function(values) {
-    var overriders = _.extend([], values);
-    if (config.isOverridenMethod('delete', overriders)) {
-      overriders.push('remove');
-    }
-    config.methodOverriders = overriders;
-    return this;
-  };
 
   config.jsonp = _.isUndefined(config.jsonp) ? false : config.jsonp;
-  object.setJsonp = function(active) {
-    config.jsonp = active;
-  };
 
   config.isOverridenMethod = function(method, values) {
     var search = values || config.methodOverriders;
@@ -139,14 +76,6 @@ Configurer.init = function(object, config) {
    * Sets the URL creator type. For now, only Path is created. In the future we'll have queryParams
    **/
   config.urlCreator = config.urlCreator || 'path';
-  object.setUrlCreator = function(name) {
-    if (!_.has(config.urlCreatorFactory, name)) {
-      throw new Error('URL Path selected isn\'t valid');
-    }
-
-    config.urlCreator = name;
-    return this;
-  };
 
   /**
    * You can set the restangular fields here. The 3 required fields for Restangular are:
@@ -210,11 +139,6 @@ Configurer.init = function(object, config) {
     save: 'save',
     restangularized: 'restangularized'
   };
-  object.setRestangularFields = function(resFields) {
-    config.restangularFields =
-      _.extend(config.restangularFields, resFields);
-    return this;
-  };
 
   config.isRestangularized = function(obj) {
     return !!obj[config.restangularFields.restangularized];
@@ -265,10 +189,6 @@ Configurer.init = function(object, config) {
   };
 
   config.useCannonicalId = _.isUndefined(config.useCannonicalId) ? false : config.useCannonicalId;
-  object.setUseCannonicalId = function(value) {
-    config.useCannonicalId = value;
-    return this;
-  };
 
   config.getCannonicalIdFromElem = function(elem) {
     var cannonicalId = elem[config.restangularFields.cannonicalId];
@@ -301,20 +221,7 @@ Configurer.init = function(object, config) {
     return theData;
   };
 
-  object.addResponseInterceptor = function(extractor) {
-    config.responseInterceptors.push(extractor);
-    return this;
-  };
-
   config.errorInterceptors = config.errorInterceptors || [];
-  object.addErrorInterceptor = function(interceptor) {
-    config.errorInterceptors.push(interceptor);
-    return this;
-  };
-
-  object.setResponseInterceptor = object.addResponseInterceptor;
-  object.setResponseExtractor = object.addResponseInterceptor;
-  object.setErrorInterceptor = object.addErrorInterceptor;
 
   /**
    * Response interceptor is called just before resolving promises.
@@ -344,38 +251,8 @@ Configurer.init = function(object, config) {
     }, defaultRequest);
   };
 
-  object.addRequestInterceptor = function(interceptor) {
-    config.requestInterceptors.push(function(elem, operation, path, url, headers, params, httpConfig) {
-      return {
-        headers: headers,
-        params: params,
-        element: interceptor(elem, operation, path, url),
-        httpConfig: httpConfig
-      };
-    });
-    return this;
-  };
-
-  object.setRequestInterceptor = object.addRequestInterceptor;
-
-  object.addFullRequestInterceptor = function(interceptor) {
-    config.requestInterceptors.push(interceptor);
-    return this;
-  };
-
-  object.setFullRequestInterceptor = object.addFullRequestInterceptor;
-
   config.onBeforeElemRestangularized = config.onBeforeElemRestangularized || function(elem) {
     return elem;
-  };
-  object.setOnBeforeElemRestangularized = function(post) {
-    config.onBeforeElemRestangularized = post;
-    return this;
-  };
-
-  object.setRestangularizePromiseInterceptor = function(interceptor) {
-    config.restangularizePromiseInterceptor = interceptor;
-    return this;
   };
 
   /**
@@ -388,25 +265,9 @@ Configurer.init = function(object, config) {
   config.onElemRestangularized = config.onElemRestangularized || function(elem) {
     return elem;
   };
-  object.setOnElemRestangularized = function(post) {
-    config.onElemRestangularized = post;
-    return this;
-  };
 
   config.shouldSaveParent = config.shouldSaveParent || function() {
     return true;
-  };
-  object.setParentless = function(values) {
-    if (_.isArray(values)) {
-      config.shouldSaveParent = function(route) {
-        return !_.includes(values, route);
-      };
-    } else if (_.isBoolean(values)) {
-      config.shouldSaveParent = function() {
-        return !values;
-      };
-    }
-    return this;
   };
 
   /**
@@ -419,55 +280,12 @@ Configurer.init = function(object, config) {
    * By default, the suffix is null
    */
   config.suffix = _.isUndefined(config.suffix) ? null : config.suffix;
-  object.setRequestSuffix = function(newSuffix) {
-    config.suffix = newSuffix;
-    return this;
-  };
 
   /**
    * Add element transformers for certain routes.
    */
   config.transformers = config.transformers || {};
   config.matchTransformers = config.matchTransformers || [];
-  object.addElementTransformer = function(type, secondArg, thirdArg) {
-    var isCollection = null;
-    var transformer = null;
-    if (arguments.length === 2) {
-      transformer = secondArg;
-    } else {
-      transformer = thirdArg;
-      isCollection = secondArg;
-    }
-
-    var transformerFn = function(coll, elem) {
-      if (_.isNull(isCollection) || (coll === isCollection)) {
-        return transformer(elem);
-      }
-      return elem;
-    };
-
-    if (_.isRegExp(type)) {
-      config.matchTransformers.push({
-        regexp: type,
-        transformer: transformerFn
-      });
-    } else {
-      if (!config.transformers[type]) {
-        config.transformers[type] = [];
-      }
-      config.transformers[type].push(transformerFn);
-    }
-
-    return object;
-  };
-
-  object.extendCollection = function(route, fn) {
-    return object.addElementTransformer(route, true, fn);
-  };
-
-  object.extendModel = function(route, fn) {
-    return object.addElementTransformer(route, false, fn);
-  };
 
   config.transformElem = function(elem, isCollection, route, Restangular, force) {
     if (!force && !config.transformLocalElements && !elem[config.restangularFields.fromServer]) {
@@ -498,19 +316,11 @@ Configurer.init = function(object, config) {
     false :
     config.transformLocalElements;
 
-  object.setTransformOnlyServerElements = function(active) {
-    config.transformLocalElements = !active;
-  };
 
   config.fullResponse = _.isUndefined(config.fullResponse) ? false : config.fullResponse;
-  object.setFullResponse = function(full) {
-    config.fullResponse = full;
-    return this;
-  };
-
 
   //Internal values and functions
   config.urlCreatorFactory = {};
 
   config.urlCreatorFactory.path = Path;
-};
+}

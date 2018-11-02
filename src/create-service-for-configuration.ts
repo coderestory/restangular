@@ -1,4 +1,4 @@
-import { Configurer } from './configurer';
+import { initConfiguration } from './init-configuration';
 
 export function createServiceForConfiguration(config, $http, $q) {
   var service = {};
@@ -578,7 +578,7 @@ export function createServiceForConfiguration(config, $http, $q) {
 
   function withConfigurationFunction(configurer) {
     var newConfig = angular.copy(_.omit(config, 'configuration'));
-    Configurer.init(newConfig, newConfig);
+    initConfiguration(newConfig, newConfig);
     configurer(newConfig);
     return createServiceForConfiguration(newConfig, $http, $q);
   }
@@ -602,7 +602,7 @@ export function createServiceForConfiguration(config, $http, $q) {
     return serv;
   }
 
-  Configurer.init(service, config);
+  initConfiguration(service, config);
 
   service.copy = _.bind(copyRestangularizedElement, service);
 
