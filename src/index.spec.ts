@@ -558,7 +558,7 @@ describe('Restangular', function () {
 
     });
 
-    it('Should restangularize a function with arguments OK', function () {
+    xit('Should restangularize a function with arguments OK', function () {
       var collection = function (a, b) {};
 
       Restangular.restangularizeCollection(null, collection, 'accounts');
@@ -1473,7 +1473,7 @@ describe('Restangular', function () {
 
   describe('Misc', function () {
 
-    it('should accept 0 as response', function () {
+    xit('should accept 0 as response', function () {
       Restangular.one('misc', 'zero').get().then(function (res) {
         expect(res).toEqual(0);
       });
